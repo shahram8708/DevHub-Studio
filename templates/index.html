@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevHub Studio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .editor-container {
+            flex: 1;
+            padding: 20px;
+            border-right: 1px solid #ccc;
+            overflow-y: auto;
+        }
+
+        .code-editor {
+            width: 100%;
+            min-height: calc(100vh - 120px);
+            background-color: #fff;
+            color: #333;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Fira Code', monospace;
+            font-size: 16px;
+            line-height: 1.6;
+            outline: none;
+            resize: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .code-editor:focus {
+            border-color: #61afef;
+        }
+
+        .line-numbers {
+            float: left;
+            width: 50px;
+            padding: 15px 5px;
+            background-color: #f7f7f7;
+            color: #999;
+            font-size: 14px;
+            text-align: right;
+            user-select: none;
+            border-right: 1px solid #ddd;
+        }
+
+        .line-highlight {
+            position: absolute;
+            background-color: #f0f0f0;
+            width: calc(100% - 55px);
+            height: 100%;
+            z-index: -1;
+        }
+
+        .output-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            border-left: 1px solid #ccc;
+        }
+
+        .output-container h1 {
+            color: #61afef;
+            margin-bottom: 15px;
+        }
+
+        .output {
+            background-color: #fff;
+            color: #333;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            overflow: auto;
+            white-space: pre-wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            font-size: 18px;
+            background-color: #61afef;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #4db5ff;
+        }
+
+        select,
+        textarea {
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            background-color: #fff;
+            color: #333;
+            outline: none;
+            margin-bottom: 15px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        option {
+            background-color: #fff;
+            color: #333;
+        }
+
+        .sidebar {
+            width: 300px;
+            padding: 20px;
+            background-color: #fff;
+            border-left: 1px solid #ccc;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #61afef;
+            color: #fff;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .tab:hover {
+            background-color: #4db5ff;
+        }
+
+        .tab.active {
+            background-color: #4db5ff;
+        }
+
+        .code-snippet {
+            background-color: #f7f7f7;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: auto;
+        }
+
+        .footer {
+            padding: 20px;
+            text-align: center;
+            background-color: #333;
+            color: #fff;
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .search-container input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .search-container input[type="text"]:focus {
+            border-color: #61afef;
+        }
+
+        .search-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #61afef;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .search-container button:hover {
+            background-color: #4db5ff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="editor-container">
+        <div class="editor-container">
+            <h1>DevHub Studio</h1>
+            <div class="search-container">
+                <input type="text" id="languageSearch" placeholder="Search languages...">
+                <button onclick="searchLanguages()"><i class="fas fa-search"></i></button>
+            </div>
+            <select id="language">
+                <option value="assembly">Assembly</option>
+                <option value="ada">Ada</option>
+                <option value="algol">ALGOL</option>
+                <option value="bash">Bash</option>
+                <option value="basic">BASIC</option>
+                <option value="c">C</option>
+                <option value="csharp">C#</option>
+                <option value="cpp">C++</option>
+                <option value="cobol">COBOL</option>
+                <option value="crystal">Crystal</option>
+                <option value="dart">Dart</option>
+                <option value="delphi">Delphi/Object Pascal</option>
+                <option value="d">D</option>
+                <option value="elixir">Elixir</option>
+                <option value="elm">Elm</option>
+                <option value="erlang">Erlang</option>
+                <option value="fsharp">F#</option>
+                <option value="forth">Forth</option>
+                <option value="fortran">Fortran</option>
+                <option value="go">Go</option>
+                <option value="groovy">Groovy</option>
+                <option value="haskell">Haskell</option>
+                <option value="html">HTML</option>
+                <option value="idris">Idris</option>
+                <option value="io">Io</option>
+                <option value="java">Java</option>
+                <option value="javascript">JavaScript</option>
+                <option value="julia">Julia</option>
+                <option value="kotlin">Kotlin</option>
+                <option value="lisp">Lisp</option>
+                <option value="lua">Lua</option>
+                <option value="matlab">MATLAB</option>
+                <option value="nim">Nim</option>
+                <option value="objc">Objective-C</option>
+                <option value="ocaml">OCaml</option>
+                <option value="pascal">Pascal</option>
+                <option value="perl">Perl</option>
+                <option value="php">PHP</option>
+                <option value="prolog">Prolog</option>
+                <option value="python3">Python</option>
+                <option value="r">R</option>
+                <option value="ruby">Ruby</option>
+                <option value="rust">Rust</option>
+                <option value="scala">Scala</option>
+                <option value="scheme">Scheme</option>
+                <option value="scratch">Scratch</option>
+                <option value="shell">Shell Script</option>
+                <option value="smalltalk">Smalltalk</option>
+                <option value="solidity">Solidity</option>
+                <option value="sql">SQL</option>
+                <option value="swift">Swift</option>
+                <option value="tcl">Tcl</option>
+                <option value="typescript">TypeScript</option>
+                <option value="vhdl">VHDL</option>
+                <option value="vbnet">Visual Basic .NET</option>
+                <option value="webassembly">WebAssembly</option>
+                <option value="zig">Zig</option>
+                <option value="css">CSS</option>
+            </select>
+            <textarea id="code" class="code-editor" placeholder="Write your code here..."></textarea>
+            <button class="btn" onclick="executeCode()"><i class="fas fa-play"></i> Run Code</button>
+        </div>
+        <div class="output-container">
+            <h1 style="color: #61afef;">Output</h1>
+            <pre id="output"></pre>
+        </div>
+    </div>
+    <script>
+        async function executeCode() {
+            const code = document.getElementById('code').value;
+            const language = document.getElementById('language').value;
+
+            const response = await fetch('/run', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ code, language })
+            });
+
+            const result = await response.json();
+            document.getElementById('output').textContent = result.output;
+        }
+        function searchLanguages() {
+            const input = document.getElementById("languageSearch").value.toUpperCase();
+            const select = document.getElementById("language");
+            const options = select.getElementsByTagName("option");
+            for (let i = 0; i < options.length; i++) {
+                const txtValue = options[i].textContent || options[i].innerText;
+                if (txtValue.toUpperCase().indexOf(input) > -1) {
+                    options[i].style.display = "";
+                } else {
+                    options[i].style.display = "none";
+                }
+            }
+        }
+
+    </script>
+</body>
+
+</html>
