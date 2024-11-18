@@ -3,8 +3,8 @@ import requests
 
 app = Flask(__name__)
 
-JDoodle_CLIENT_ID = '3812e25af18bdbbbb9819073b7e083e6'
-JDoodle_CLIENT_SECRET = 'de219f6ad96a4c727aecede1834977e7daf28cc769d0bec4e58e5fbe97f1a0a5'
+JDoodle_CLIENT_ID = 'JDoodle_CLIENT_ID'
+JDoodle_CLIENT_SECRET = 'JDoodle_CLIENT_SECRET'
 
 @app.route('/')
 def home():
